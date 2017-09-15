@@ -17,11 +17,12 @@ private static final String TASK_QUEUE_NAME = "task_queue";
         
         channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
         //      分发消息
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3000; i++)
         {
             String message = "Hello World! " + i;
             channel.basicPublish("", TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
             System.out.println("Producer:----- [x] Sent '" + message + "'");
+            //Thread.sleep(200);
         }
         channel.close();
         connection.close();

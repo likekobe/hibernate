@@ -56,7 +56,7 @@ private static final String TASK_QUEUE_NAME = "task_queue";
     {
         try
         {
-            Thread.sleep(1000); // ‘›Õ£1√Î÷”
+            Thread.sleep(100); // ‘›Õ£1√Î÷”
         }
         catch (InterruptedException _ignored)
         {

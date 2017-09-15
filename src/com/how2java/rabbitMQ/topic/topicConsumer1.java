@@ -6,6 +6,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import com.how2java.pojo.Hero;
 import com.how2java.pojo.Product;
 import com.rabbitmq.client.*;
 
@@ -20,28 +21,52 @@ public class topicConsumer1 {
 		Channel channel=connection.createChannel();
 		
 		//声明一个匹配模式的交换器
-		channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+		channel.exchangeDeclare(EXCHANGE_NAME, "topic",true);
 		String queueName=channel.queueDeclare().getQueue();
 		
 		//路由关键字
-		String[] routingKeys=new String[]{"*.orange.*"};
+		String[] routingKeys=new String[]{"*.product.*"};
 		
 		//绑定路由关键字
 		for(String bindingKey:routingKeys)
 		{
 			channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);
-			System.out.println("----- Consumer1: exchange_name:"+EXCHANGE_NAME+", queue_name:"+queueName+", BindRoutingKey:" + bindingKey);
+			System.out.println("----- Consumer1绑定路由关键字！ exchange_name:"+EXCHANGE_NAME+"， queue_name:"+queueName+"， BindRoutingKey:" + bindingKey);
 		}
 		
 		Consumer consumer =new DefaultConsumer(channel){
+			int productCount=0;
+			int heroCount=0;
+			int otherCount=0;
+			
 			@Override
-			public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws UnsupportedEncodingException
+			public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException
 			{
-				String message=new String(body,"UTF-8");
-				Product product=(Product)SerializationUtils.deserialize(body);
 				
-				System.out.println("----- Consumer1: Received '" + envelope.getRoutingKey() + "' : '"
-						+ "" + product.getId()+","+product.getName() + ","+product.getPrice()+"'");
+				Object obj=SerializationUtils.deserialize(body);
+				if(obj instanceof Product)
+				{
+					productCount++;
+					Product product=(Product)obj;
+					System.out.println("----- Consumer1接受到消息！product:"+productCount+"个， 路由关键字：" + envelope.getRoutingKey() 
+							+ "，类：" + product.getId()+","+product.getName() + ","+product.getPrice());
+					
+				}
+				else if(obj instanceof Hero)
+				{
+					heroCount++;
+					Hero hero=(Hero)obj;
+					System.out.println("----- Consumer1接受到消息！ hero:"+heroCount+"个，路由关键字：" + envelope.getRoutingKey() 
+							+ "，类：" + hero.getId()+","+hero.getName() + ","+hero.getLevel());
+					
+				}
+				else {
+					otherCount++;
+					System.out.println("----- Consumer1接受到消息！other:"+otherCount+"个， 路由关键字：" + envelope.getRoutingKey() 
+					+ "，类：" +obj);
+					
+				}
+				channel.basicRecover(true);
 			}
 		};
 		channel.basicConsume(queueName, true,consumer);
