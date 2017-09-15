@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/rabbitMQ/amqp-client-4.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/rabbitMQ/slf4j-api-1.7.21.jar"/>
 	<classpathentry kind="lib" path="lib/rabbitMQ/slf4j-simple-1.7.22.jar"/>
+	<classpathentry kind="lib" path="D:/project/hibernate/lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

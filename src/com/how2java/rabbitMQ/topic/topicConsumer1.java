@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.how2java.pojo.Product;
 import com.rabbitmq.client.*;
 
-public class Consumer1 {
+public class topicConsumer1 {
 
 	private static final String EXCHANGE_NAME="topic_logs";
 	
@@ -35,7 +38,10 @@ public class Consumer1 {
 			public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws UnsupportedEncodingException
 			{
 				String message=new String(body,"UTF-8");
-				System.out.println("----- Consumer1: Received '" + envelope.getRoutingKey() + "' : '" + message + "'");
+				Product product=(Product)SerializationUtils.deserialize(body);
+				
+				System.out.println("----- Consumer1: Received '" + envelope.getRoutingKey() + "' : '"
+						+ "" + product.getId()+","+product.getName() + ","+product.getPrice()+"'");
 			}
 		};
 		channel.basicConsume(queueName, true,consumer);

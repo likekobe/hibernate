@@ -10,7 +10,7 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
-public class Consumer2 {
+public class topicConsumer2 {
 	private final static String EXCHANGE_NAME="topic_logs";
 	
 	public static void main(String[] args) {
